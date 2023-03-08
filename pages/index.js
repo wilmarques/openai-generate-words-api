@@ -3,28 +3,30 @@ import { useState } from "react";
 import styles from "./index.module.css";
 
 export default function Home() {
-  const [animalInput, setAnimalInput] = useState("");
-  const [result, setResult] = useState();
+  const [results, setResults] = useState([]);
 
   async function onSubmit(event) {
     event.preventDefault();
     try {
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/generate_random_word", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ animal: animalInput }),
       });
 
       const data = await response.json();
       if (response.status !== 200) {
-        throw data.error || new Error(`Request failed with status ${response.status}`);
+        throw (
+          data.error ||
+          new Error(`Request failed with status ${response.status}`)
+        );
       }
 
-      setResult(data.result);
-      setAnimalInput("");
-    } catch(error) {
+      const newResults = [...results, data.result];
+
+      setResults(newResults);
+    } catch (error) {
       // Consider implementing your own error handling logic here
       console.error(error);
       alert(error.message);
@@ -34,24 +36,19 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>OpenAI Quickstart</title>
-        <link rel="icon" href="/dog.png" />
+        <title>Guess Word API</title>
       </Head>
 
       <main className={styles.main}>
-        <img src="/dog.png" className={styles.icon} />
-        <h3>Name my pet</h3>
-        <form onSubmit={onSubmit}>
-          <input
-            type="text"
-            name="animal"
-            placeholder="Enter an animal"
-            value={animalInput}
-            onChange={(e) => setAnimalInput(e.target.value)}
-          />
-          <input type="submit" value="Generate names" />
-        </form>
-        <div className={styles.result}>{result}</div>
+        <h3>Generate a random Word</h3>
+        <input type="submit" value="Generate word" onClick={onSubmit} />
+        <div className={styles.result}>
+          <ul>
+            {results.map((result) => (
+              <li>{result}</li>
+            ))}
+          </ul>
+        </div>
       </main>
     </div>
   );
