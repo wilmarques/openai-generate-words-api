@@ -21,7 +21,10 @@ export default async function (req, res) {
       prompt: 'Generate a random common word between 4 and 8 letters',
       temperature: 1,
     });
-    const sanitizedResult = completion.data.choices[0].text.replaceAll('\n', '');
+
+    const result = completion.data.choices[0].text;
+    const sanitizedResult = sanitizeResult(result);
+
     res.status(200).json({ result: sanitizedResult });
 
   } catch(error) {
@@ -38,4 +41,15 @@ export default async function (req, res) {
       });
     }
   }
+}
+
+/**
+ * Remove not necessary characters 
+ * @param {string} result Value to be sanitized
+ */
+function sanitizeResult(result) {
+  const sanitizedResult = result
+                            .replaceAll('\n', '')
+                            .replaceAll('.', '');
+  return sanitizedResult;
 }
