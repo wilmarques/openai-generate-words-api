@@ -8,7 +8,7 @@ export default function Home() {
   async function onSubmit(event) {
     event.preventDefault();
     try {
-      const response = await fetch("/api/generate_random_word", {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,9 +23,16 @@ export default function Home() {
         );
       }
 
-      const newResults = [...results, data.result];
+      setResults(data);
 
-      setResults(newResults);
+//       const answers = data.result[0].split('\n').map((r) => {
+// return r;
+//       });
+//       setResults(answers);
+
+      // const newResults = [...results, data.result];
+
+      // setResults(newResults);
     } catch (error) {
       // Consider implementing your own error handling logic here
       console.error(error);
@@ -43,11 +50,7 @@ export default function Home() {
         <h3>Generate a random Word</h3>
         <input type="submit" value="Generate word" onClick={onSubmit} />
         <div className={styles.result}>
-          <ul>
-            {results.map((result) => (
-              <li>{result}</li>
-            ))}
-          </ul>
+          {JSON.stringify(results)}
         </div>
       </main>
     </div>

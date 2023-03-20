@@ -15,23 +15,19 @@ export default async function (req, res) {
     return;
   }
 
-  const animal = req.body.animal || '';
-  if (animal.trim().length === 0) {
-    res.status(400).json({
-      error: {
-        message: "Please enter a valid animal",
-      }
-    });
-    return;
-  }
-
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(animal),
+      prompt: generatePrompt(),
       temperature: 0.6,
+      max_tokens: 100,
     });
-    res.status(200).json({ result: completion.data.choices[0].text });
+
+    const result = completion.data.choices[0].text;
+    const sanitizedResult = result; //sanitizeResult(result);
+
+    res.status(200).json({ result: sanitizedResult });
+
   } catch(error) {
     // Consider adjusting the error handling logic for your use case
     if (error.response) {
@@ -49,14 +45,14 @@ export default async function (req, res) {
 }
 
 function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
+  return `Generate a random common word, give me that and 5 definitions for the same word
 
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+###
+Word:
+1. Definition
+2. Definition
+3. Definition
+4. Definition
+5. Definition
+###`;
 }
